@@ -139,6 +139,42 @@ Gồm 2 phần:
 ## Overload Frame
 Dùng khi Frame bị tràn bộ đệm. Khi Node nhận quá nhiều dữ liệu khổng thể xử lý kịp, nó sẽ gửi đi Overload Frame.
 
+# AUTOSAR
+AUTOSAR có 2 tiêu chuẩn: **Classic AUTOSAR** và **Adaptive AUTOSAR**
+- **Classic AUTOSAR**: Những tính năng đơn giản (điều hòa, điều khiển động cơ, gạt nước mưa,...), chủ yếu dùng C
+- **Adaptive AUTOSAR**: Những tính năng phức tạp hơn (radar, hỗ trợ người lái,...), chủ yếu dùng C++
+## Cấu trúc AUTOSAR 
+
+![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/006984a4-d7db-4a1f-80e0-525601145141)
+
+- **Microcontroller** (Vi điều khiển): Lập trình thanh ghi
+- **Microcontroller abstraction layer**: Sử dụng các device GPIO, SPI, I2C, UART, CAN,...
+- **ECU abstraction layer**: Code những tính năng cụ thể hơn.
+- **Service layer**: Cung cấp các dịch vụ khác nhau cho các application sử dụng.
+- **Runtime Environment (RTE)**: Đây là một trong những layer quan trọng nhất của AUTOSAR, Application Layer sử dụng layer này trong khi giao tiếp với các layer bên dưới bằng các ports.
+- **Application Layer**: Chứa code ứng dụng, bao gồm các chương trình điều khiển và các dịch vụ ứng dụng khác nhau.
+- **Complex Device Driver (CDD)**: Chứa những tính răng riêng biệt của từng hãng xe
+
+Ví dụ:
+![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/6cc53afe-56a1-45df-aff2-b236f1bf979a)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
