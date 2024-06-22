@@ -204,9 +204,10 @@ Thanh ghi chứa giá trị ID của gói tin
 
 ## Truyền - Nhận CAN
 Để xác định được 1 gói tin, cần có **ID**, các bit **RTR**, **IDE**, **DLC** và tối đa 8 byte data như bài trước đã đề cập. Các thành phần này được tổ chức trong **CanRxMsg**.
+
 Hàm truyền: **uint8_t CAN_Transmit(CAN_TypeDef CANx, CanTxMsg TxMessage)**:
-    - **CANx**: Bộ CAN cần dùng.
-    - **TxMessage**: Struct CanRxMsg cần truyền.
+- **CANx**: Bộ CAN cần dùng.
+- **TxMessage**: Struct **CanRxMsg** cần truyền.
 
 ```
     CanTxMsg TxMessage;
