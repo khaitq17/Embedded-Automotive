@@ -139,6 +139,109 @@ Gồm 2 phần:
 ## Overload Frame
 Dùng khi Frame bị tràn bộ đệm. Khi Node nhận quá nhiều dữ liệu khổng thể xử lý kịp, nó sẽ gửi đi Overload Frame.
 
+## Sơ đồ đấu nối
+
+![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/cc24c5f1-9ac0-4e1a-a556-78707cb9aad5)
+
+## Cấu hình CAN
+- Tương tự các ngoại vi, CAN được cấp xung từ APB1.
+
+![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/c689e217-875c-4e88-a78c-8a5d397d0b82)
+
+- Cấu hình cho 2 chân TX và RX của bộ CAN.
+    - RX (PA11): Mode In_Floating
+    - TX (PA12): Mode AF_PP
+
+Các tham số cho CAN được cấu hình trong struct **CAN_InitTypeDef** bao gồm:
+- **CAN_TTCM**: Chế độ giao tiếp được kích hoạt theo thời gian ấn định khoảng thời gian khi truyền message.
+- **CAN_ABOM**: Quản lý ngắt bus tự động. Nếu trong quá trình truyền xảy ra lỗi, bus sẽ được ngắt. Bit này quy định việc CAN có quay về trạng thái bình thường hay không.
+- **CAN_AWUM**: Chế độ đánh thức tự động. Nếu CAN hoạt động ở SleepMode, Bit này quy định việc đánh thức CAN theo cách thủ công hay tự động.
+- **CAN_NART**: Không  tự động truyền lại. CAN sẽ thử lại để truyền tin nhắn nếu các lần thử trước đó không thành công. Nếu set bit này thì sẽ không truyền lại. Nên set bit khi sử dụng chung với **CAN_TTCM**, nếu không thì nên để = 0;
+- **CAN_RFLM**: Chế độ khóa nhận FIFO. Chế độ khóa bộ đệm khi đầy.
+- **CAN_TXFP**: Ưu tiên truyền FIFO. Đặt bit này =0, ưu tiên truyền các gói có ID thấp hơn. Nếu đặt lên 1, CAN sẽ ưu tiên các gói theo thứ tự trong bộ đệm.
+- **CAN_Mode**: Chế độ CAN:
+    - **CAN_Mode_Normal**: Gửi message thông thường.
+    - **CAN_Mode_LoopBack**: Các message gửi đi sẽ được lưu vào bộ nhớ đệm.
+    - **CAN_Mode_Silent**: Chế độ chỉ nhận.
+    - **CAN_Mode_Silent_LoopBack**: Kết hợp giữa 2 mode trên.
+- **CAN_Prescaler**: Cài đặt giá trị chia để tạo time quatum. 
+    - `fCan` = `sysclk` / `CAN_Prescaler`
+    - `1tq` = 1 / `fCan`
+- **CAN_SJW**: Thời gian trễ phần cứng, tính theo tq.
+- **CAN_BS1**: Thời gian đồng bộ đầu frame truyền, tính theo tq.
+- **CAN_BS2**: Thời gian đồng bộ cuối frame truyền, tính theo tq.
+
+Tốc độ truyền CAN = 1/(`SJW`+`BS1`+`BS2`) 
+
+## Cấu hình CAN Mask & Filter
+CAN hỗ trợ bộ lọc ID, giúp các Node có thể lọc ra ID từ các message trên Bus để quyết định sẽ nhận massge nào. Các tham số cho bộ lọc được cấu hình trong **CAN_FilterInitTypeDef**:
+- **CAN_FilterNumber**: Chọn bộ lọc để dùng, từ 0-13.
+- **CAN_FilterMode**: Chế độ bộ lọc: 
+    - **IdMask**: Sử dụng mặt nạ bit để lọc ID.
+    - **IdList**: Không sử dụng mặt nạ bit.
+- **CAN_FilterScale**: Kích thước của bộ lọc, 32 hoặc 16 bit.
+- **CAN_FilterMaskIdHigh** và **CAN_FilterMaskIdLow**: Giá trị cài đặt cho Mask, 32 bits.
+- **CAN_FilterIdHigh** và **CAN_FilterIdLow**:  Giá trị cài đặt cho bộ lọc, 32bits.
+- **CAN_FilterFIFOAssignment**: Chọn bộ đệm cần áp dụng bộ lọc.
+- **CAN_FilterActivation**: Kích hoạt bộ lọc ID.
+
+![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/9396c7b8-ec3e-4b42-96ff-0e5b69c54539)
+
+|Mask Bit n|Filter Bit n|Message Identifier Bit|Accept or Reject Bit n|
+|:--:|:--:|:--:|:--:|
+|0|x|x|Accept|
+|1|0|0|Accept|
+|1|0|1|Reject|
+|1|1|0|Reject|
+|1|1|1|Accept|
+
+## Giá trị bộ lọc & Giá trị ID trong massage
+Thanh ghi chứa giá trị ID của gói tin
+
+![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/0e78e5df-bfac-4696-9990-9a4b9ca9ce62)
+
+Để áp dụng được Mask và ID cho gói tin với ID là stdID, cần setup 11 bit cao của Mask cùng như của Filter.
+
+## Truyền - Nhận CAN
+Để xác định được 1 gói tin, cần có **ID**, các bit **RTR**, **IDE**, **DLC** và tối đa 8 byte data như bài trước đã đề cập. Các thành phần này được tổ chức trong **CanRxMsg**.
+Hàm truyền: **uint8_t CAN_Transmit(CAN_TypeDef CANx, CanTxMsg TxMessage)**:
+    - **CANx**: Bộ CAN cần dùng.
+    - **TxMessage**: Struct CanRxMsg cần truyền.
+
+```
+    CanTxMsg TxMessage;
+
+    TxMessage.StdId = 0x123; // 11bit ID voi che do std
+    TxMessage.ExtId = 0x00;
+    TxMessage.RTR = CAN_RTR_DATA;
+    TxMessage.IDE = CAN_ID_STD;
+    TxMessage.DLC = len;
+	
+    for (int i = 0; i < len; i++)
+    {
+        TxMessage.Data[i] = data[i];
+    }
+
+    CAN_Transmit(CAN1, &TxMessage);
+```
+
+Gói tin nhận được sẽ được lưu dưới dạng **CanRxMsg** struct. Gồm các thành phần tương tự **CanTxMsg** của gói tin nhận được.
+
+Hàm **CAN_MessagePending(CAN_TypeDef CANx, uint8_t FIFONumber)**: Trả về số lượng gói tin đang đợi trong FIFO của bộ CAN. Dùng hàm này để kiểm tra xem bộ CAN có đang truyền nhận hay không, nếu FIFO trống thì có thể nhận.
+
+Hàm **CAN_Receive(CAN_TypeDef CANx, uint8_t FIFONumber, CanRxMsg RxMessage)**: Nhận về 1 gói tin từ bộ **CANx**, lưu vào **RxMessage**.
+
+```
+    CanRxMsg RxMessage;
+    while (CAN_MessagePending(CAN1, CAN_FIFO0) <1 );
+    CAN_Receive(CAN1, CAN_FIFO0, &RxMessage);
+	ID = RxMessage.StdId;
+    for (int i = 0; i < RxMessage.DLC; i++)
+    {
+        TestArray[i] = RxMessage.Data[i];
+    }
+```
+
 # AUTOSAR
 AUTOSAR có 2 tiêu chuẩn: **Classic AUTOSAR** và **Adaptive AUTOSAR**
 - **Classic AUTOSAR**: Những tính năng đơn giản (điều hòa, điều khiển động cơ, gạt nước mưa,...), chủ yếu dùng C
