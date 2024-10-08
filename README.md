@@ -1,12 +1,13 @@
 # CAN
 CAN (Controller Area Network) là giao thức giao tiếp nối tiếp hỗ trợ mạnh cho những hệ thống điều khiển thời gian thực phân bố (distributed realtime control system).
 
-CAN đặc biệt được ứng dụng nhiều trong ngành công nghiệp ô tô.
+CAN đặc biệt được ứng dụng nhiều trong ngành công nghiệp ô tô. 
+
 ![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/5e0c0725-c7ba-4604-9310-c6c803367ee8)
 
-Mỗi khối được điều khiển bởi 1 vi điều khiển riêng biệt, và thông qua CAN Bus để kết nối, giao tiếp với nhau.
+Mỗi khối được điều khiển bởi 1 vi điều khiển riêng biệt, và thông qua CAN Bus để kết nối, giao tiếp với nhau. Và thời gian phản hồi của mỗi khối VĐK là cực kì nhanh.
 ## Mạng CAN
-CAN có đường dây dẫn gồm 2 dây CAN_H và CAN_L. Các thiết bị được nối chung trên 2 dây này và được gọi là 1 Node trong mạng.
+CAN có đường dây dẫn gồm 2 dây CAN_H (CAN High) và CAN_L (CAN Low). Các thiết bị được nối chung trên 2 dây này và được gọi là 1 Node trong mạng.
 
 ![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/68f12553-8b0b-4dc6-a9ae-c60abc5c7ff9)
 
@@ -14,7 +15,7 @@ CAN có đường dây dẫn gồm 2 dây CAN_H và CAN_L. Các thiết bị đ�
 Mạng CAN được tạo thành bởi 1 nhóm các Node.
 
 1 Node bao gồm:
-- Một thiết bị hỗ trợ xử lý điện áp trên Bus - CAN Transceiver
+- Một thiết bị hỗ trợ xử lý điện áp trên Bus là CAN Transceiver.
 - Một MCU có hỗ trợ CAN Controller (giao thức CAN). MCU ngoài việc nhận và xử lý data còn thực hiện chức năng của Node.  
 
 ![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/d8958672-8ccc-4b34-b280-b34147b0286e)
@@ -44,9 +45,9 @@ Can Bus định nghĩa 2 trạng thái điện áp là "dominant" (mức 0) và 
 | CAN_L | 2,5 V | 1,5 V |
 
 ## Tính chất
-Vì tính chất vi sai trên đường truyền tín hiệu của CAN Bus, tín hiệu nhiễu sẽ ảnh hưởng đến giá trị điện áp.
+Vì tính chất vi sai trên đường truyền tín hiệu của CAN Bus, tín hiệu nhiễu sẽ ảnh hưởng đến giá trị điện áp ở trên cả CAN H và CAN L.
 
-CAN Bus thường được xoắn 2 dây vào nhau. Khi đó tín hiệu nhiễu sẽ đều trên cả 2 dây CAN_H và CAN_L, lúc này nhiễu sẽ bị triệt tiêu.
+CAN Bus thường được **xoắn 2 dây vào nhau**. Khi đó tín hiệu nhiễu sẽ đều trên cả 2 dây CAN_H và CAN_L, lúc này nhiễu sẽ bị triệt tiêu.
 
 ![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/66ab8052-853f-4bb5-866c-7ccd06be6c5d)
 
